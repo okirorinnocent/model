@@ -1,5 +1,6 @@
+"""Streamlit app for predicting precipitation in Basel."""
+
 import joblib
-import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -10,28 +11,27 @@ st.set_page_config(page_title="Weather Prediction App", layout="centered")
 st.title("🌦️ Basel Precipitation Predictor")
 st.write("Enter a target date to predict the expected precipitation levels.")
 
-# 1. Load the saved model artifacts
-
 
 @st.cache_resource
 def load_model_artifacts():
-    # Looks for files located in the exact same directory as app.py
-    model = joblib.load("weather_model.pkl")
+    """Load model artifacts safely from disk."""
+    loaded_model = joblib.load("weather_model.pkl")
     num_cols = joblib.load("numerical_features.pkl")
     cat_cols = joblib.load("categorical_features.pkl")
-    return model, num_cols, cat_cols
+    return loaded_model, num_cols, cat_cols
 
 
 try:
     model, numerical_features, categorical_features = load_model_artifacts()
-except Exception as e:
-    st.error(f"Could not load model files. Error details: {e}")
+except (FileNotFoundError, KeyError, ValueError) as load_err:
+    st.error(f"Could not load model files. Error details: {load_err}")
     st.info(
-        "Make sure 'weather_model.pkl', 'numerical_features.pkl', and 'categorical_features.pkl' are uploaded into the exact same folder as app.py."
+        "Make sure 'weather_model.pkl', 'numerical_features.pkl', and "
+        "'categorical_features.pkl' are in the app folder."
     )
     st.stop()
 
-# 2. Create User Input Interface
+# User Input Interface
 st.subheader("Select Date for Prediction")
 col1, col2, col3 = st.columns(3)
 
@@ -42,13 +42,10 @@ with col2:
 with col3:
     day = st.slider("Day", min_value=1, max_value=31, value=15)
 
-# 3. Generate feature baseline safely
 if st.button("Predict Precipitation", type="primary"):
-    # Create an empty template matching your exact trained features
     all_features = numerical_features + categorical_features
     input_data = pd.DataFrame(0.0, index=[0], columns=all_features)
 
-    # Inject the user's date selections
     if "year" in input_data.columns:
         input_data["year"] = year
     if "month" in input_data.columns:
@@ -66,15 +63,11 @@ if st.button("Predict Precipitation", type="primary"):
             input_data["quarter"] = target_date.quarter
         if "is_weekend" in input_data.columns:
             input_data["is_weekend"] = 1 if target_date.dayofweek >= 5 else 0
-    except Exception as date_err:
+    except (ValueError, TypeError) as date_err:
         st.error(f"Invalid calendar date selected: {date_err}")
         st.stop()
 
-    # Ensure columns match training order exactly
     input_data = input_data[all_features]
-
-    # Make the prediction and extract the float value
     prediction = model.predict(input_data)[0]
-
-    # Display the result nicely
     st.success(f"### Predicted Precipitation: **{prediction:.2f} mm**")
+s

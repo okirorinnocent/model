@@ -77,4 +77,4 @@ if st.button("Predict Precipitation", type="primary"):
     prediction = model.predict(input_data)[0]
 
     # Display the result nicely
-    st.success(f"### Predicted Precipitation: **{prediction:.2f} mm**")s
+    st.success(f"### Predicted Precipitation: **{prediction:.2f} mm**")

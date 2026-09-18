@@ -1,24 +1,7 @@
-import subprocess
-import sys
-
-# ============================================================
-# FORCE CONSOLE INSTALLATION FOR CLOUD ENVIRONMENT
-# ============================================================
-try:
-    import joblib
-    import sklearn
-except ModuleNotFoundError:
-    # Run pip install programmatically to override the environment gap
-    subprocess.check_call([
-        sys.executable, "-m", "pip", "install",
-        "joblib", "scikit-learn==1.3.*", "pandas", "numpy"
-    ])
-    import joblib
-    import sklearn
-
-import streamlit as st
-import pandas as pd
+import joblib
 import numpy as np
+import pandas as pd
+import streamlit as st
 
 # ============================================================
 # STREAMLIT INTERFACE CONFIGURATION
@@ -33,9 +16,9 @@ st.write("Enter a target date to predict the expected precipitation levels.")
 @st.cache_resource
 def load_model_artifacts():
     # Looks for files located in the exact same directory as app.py
-    model = joblib.load('weather_model.pkl')
-    num_cols = joblib.load('numerical_features.pkl')
-    cat_cols = joblib.load('categorical_features.pkl')
+    model = joblib.load("weather_model.pkl")
+    num_cols = joblib.load("numerical_features.pkl")
+    cat_cols = joblib.load("categorical_features.pkl")
     return model, num_cols, cat_cols
 
 
@@ -43,7 +26,9 @@ try:
     model, numerical_features, categorical_features = load_model_artifacts()
 except Exception as e:
     st.error(f"Could not load model files. Error details: {e}")
-    st.info("Make sure 'weather_model.pkl', 'numerical_features.pkl', and 'categorical_features.pkl' are uploaded into the exact same folder as app.py.")
+    st.info(
+        "Make sure 'weather_model.pkl', 'numerical_features.pkl', and 'categorical_features.pkl' are uploaded into the exact same folder as app.py."
+    )
     st.stop()
 
 # 2. Create User Input Interface
@@ -64,23 +49,23 @@ if st.button("Predict Precipitation", type="primary"):
     input_data = pd.DataFrame(0.0, index=[0], columns=all_features)
 
     # Inject the user's date selections
-    if 'year' in input_data.columns:
-        input_data['year'] = year
-    if 'month' in input_data.columns:
-        input_data['month'] = month
-    if 'day' in input_data.columns:
-        input_data['day'] = day
+    if "year" in input_data.columns:
+        input_data["year"] = year
+    if "month" in input_data.columns:
+        input_data["month"] = month
+    if "day" in input_data.columns:
+        input_data["day"] = day
 
     try:
         target_date = pd.Timestamp(f"{year}-{month}-{day}")
-        if 'day_of_week' in input_data.columns:
-            input_data['day_of_week'] = target_date.dayofweek
-        if 'day_of_year' in input_data.columns:
-            input_data['day_of_year'] = target_date.dayofyear
-        if 'quarter' in input_data.columns:
-            input_data['quarter'] = target_date.quarter
-        if 'is_weekend' in input_data.columns:
-            input_data['is_weekend'] = 1 if target_date.dayofweek >= 5 else 0
+        if "day_of_week" in input_data.columns:
+            input_data["day_of_week"] = target_date.dayofweek
+        if "day_of_year" in input_data.columns:
+            input_data["day_of_year"] = target_date.dayofyear
+        if "quarter" in input_data.columns:
+            input_data["quarter"] = target_date.quarter
+        if "is_weekend" in input_data.columns:
+            input_data["is_weekend"] = 1 if target_date.dayofweek >= 5 else 0
     except Exception as date_err:
         st.error(f"Invalid calendar date selected: {date_err}")
         st.stop()
@@ -92,4 +77,4 @@ if st.button("Predict Precipitation", type="primary"):
     prediction = model.predict(input_data)[0]
 
     # Display the result nicely
-    st.success(f"### Predicted Precipitation: **{prediction:.2f} mm**")
+    st.success(f"### Predicted Precipitation: **{prediction:.2f} mm**")s

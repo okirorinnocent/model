@@ -70,4 +70,3 @@ if st.button("Predict Precipitation", type="primary"):
     input_data = input_data[all_features]
     prediction = model.predict(input_data)[0]
     st.success(f"### Predicted Precipitation: **{prediction:.2f} mm**")
-s

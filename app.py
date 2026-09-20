@@ -3,6 +3,7 @@ Basel Precipitation Predictor - Professional Edition
 Designed for AI & Machine Learning Competitions.
 """
 
+from pathlib import Path
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -49,14 +50,17 @@ st.markdown(
 
 
 # ============================================================
-# MODEL & ARTIFACT LOADING
+# MODEL & ARTIFACT LOADING (DYNAMIC PATHS)
 # ============================================================
 @st.cache_resource
 def load_model_artifacts():
-    """Load trained model and feature schemas."""
-    loaded_model = joblib.load("weather_model.pkl")
-    num_cols = joblib.load("numerical_features.pkl")
-    cat_cols = joblib.load("categorical_features.pkl")
+    """Load trained model and feature schemas dynamically using absolute paths."""
+    # Dynamically locate the folder where app.py lives
+    base_dir = Path(__file__).resolve().parent
+
+    loaded_model = joblib.load(base_dir / "weather_model.pkl")
+    num_cols = joblib.load(base_dir / "numerical_features.pkl")
+    cat_cols = joblib.load(base_dir / "categorical_features.pkl")
     return loaded_model, num_cols, cat_cols
 
 
@@ -66,7 +70,7 @@ except Exception as err:
     st.error(f"⚠️ Critical Error Loading Pipeline Artifacts: {err}")
     st.info(
         "Ensure 'weather_model.pkl', 'numerical_features.pkl', and "
-        "'categorical_features.pkl' exist in the root folder."
+        "'categorical_features.pkl' exist in the same directory as app.py."
     )
     st.stop()
 

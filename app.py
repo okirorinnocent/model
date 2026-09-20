@@ -44,7 +44,7 @@ st.markdown(
     }
     </style>
 """,
-    unsafe_allow_code=True,
+    unsafe_allow_html=True,
 )
 
 
@@ -87,7 +87,7 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("🌡️ Environmental Inputs")
 st.sidebar.caption("Adjust key weather indicators:")
 
-# Interactive sliders for critical numerical inputs (if present in model)
+# Interactive sliders for numerical inputs
 temp = st.sidebar.slider("Mean Temperature (°C)", -10.0, 40.0, 15.0, step=0.5)
 humidity = st.sidebar.slider("Relative Humidity (%)", 10, 100, 70, step=1)
 pressure = st.sidebar.slider(
@@ -100,11 +100,11 @@ pressure = st.sidebar.slider(
 # ============================================================
 st.markdown(
     '<div class="main-header">🌧️ Basel Precipitation Intelligence Platform</div>',
-    unsafe_allow_code=True,
+    unsafe_allow_html=True,
 )
 st.markdown(
     '<div class="sub-header">Automated ML Inference Engine for High-Precision Precipitation Forecasting</div>',
-    unsafe_allow_code=True,
+    unsafe_allow_html=True,
 )
 
 # Organize layout into 2 main columns
